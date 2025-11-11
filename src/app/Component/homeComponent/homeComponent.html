@@ -60,9 +60,9 @@
             <div class="result-meta">{{ c.email }} • {{ c.phone }}</div>
 
             <div class="result-actions">
-              <button class="pill small neutral" (click)="assignToForm(c)" title="Atribuir a um formulário">ATRIBUIR</button>
-              <button class="icon-mini edit" (click)="editClient(c)" title="Editar">✏️</button>
-              <button class="icon-mini danger" (click)="deleteClient(c)" title="Excluir">🗑️</button>
+              <button class="pill neutral" type="button" (click)="startAssign(c)">ATRIBUIR</button>
+              <button title="Editar" class="icon-mini edit" type="button" (click)="selectClient(c)">✎</button>
+              <button title="Remover" class="icon-mini danger" type="button" (click)="clientsSvc.remove(c.id)">🗑️</button>
             </div>
           </li>
         </ul>
@@ -129,4 +129,35 @@
       <div class="empty-state">Nenhum formulário criado ou respondido</div>
     </ng-template>
   </section>
+
+  <!-- Modal de seleção de formulário -->
+  <div class="modal-backdrop" *ngIf="assigningClient" (click)="closeAssign()"></div>
+  <div class="modal" *ngIf="assigningClient">
+    <div class="modal-head">
+      <h3 class="modal-title">Atribuir formulário para {{ assigningClient?.name }}</h3>
+      <button class="icon-mini danger" type="button" (click)="closeAssign()">✖</button>
+    </div>
+
+    <div class="modal-body" *ngIf="openFormCards.length; else noForms">
+      <ul class="modal-list">
+        <li class="modal-item" *ngFor="let f of openFormCards" (click)="selectedTemplateId = f.id"
+            [class.active]="selectedTemplateId === f.id">
+          <div class="mi-title">{{ f.title }}</div>
+          <div class="mi-meta">Criado em {{ formatDate(f.createdAt) }}</div>
+          <input type="radio" name="tpl" [checked]="selectedTemplateId === f.id" />
+        </li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn ghost" type="button" (click)="closeAssign()">Cancelar</button>
+        <button class="btn primary" type="button" [disabled]="!selectedTemplateId" (click)="confirmAssign()">Atribuir</button>
+      </div>
+    </div>
+
+    <ng-template #noForms>
+      <div class="no-forms">Nenhum formulário disponível.</div>
+      <div class="modal-actions">
+        <button class="btn ghost" type="button" (click)="closeAssign()">Fechar</button>
+      </div>
+    </ng-template>
+  </div>
 </div>

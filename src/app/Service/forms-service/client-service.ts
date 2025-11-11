@@ -7,8 +7,9 @@ export interface Client {
   email: string;
   phone: string;
   room: string;
-  checkin: string;   // ISO yyyy-mm-dd
-  checkout: string;  // ISO yyyy-mm-dd
+  checkin?: string;
+  checkout?: string;
+  assignedFormId?: string;
 }
 
 const LS_KEY = 'questio.clients';
@@ -18,9 +19,7 @@ export class ClientsService {
   private _clients$ = new BehaviorSubject<Client[]>(this.load());
   clients$ = this._clients$.asObservable();
 
-  list(): Client[] {
-    return this._clients$.value;
-  }
+  list(): Client[] { return this._clients$.value; }
 
   add(input: Omit<Client, 'id'>): Client {
     const c: Client = { id: this.uuid(), ...input };
@@ -30,31 +29,31 @@ export class ClientsService {
     return c;
   }
 
-  update(id: string, patch: Partial<Omit<Client, 'id'>>): void {
+  update(id: string, patch: Partial<Client>) {
     const next = this._clients$.value.map(c => (c.id === id ? { ...c, ...patch } : c));
     this._clients$.next(next);
     this.persist(next);
   }
 
-  remove(id: string): void {
+  remove(id: string) {
     const next = this._clients$.value.filter(c => c.id !== id);
     this._clients$.next(next);
     this.persist(next);
+  }
+
+  assignToForm(clientId: string, templateId: string) {
+    this.update(clientId, { assignedFormId: templateId });
   }
 
   private load(): Client[] {
     try {
       const raw = localStorage.getItem(LS_KEY);
       return raw ? (JSON.parse(raw) as Client[]) : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
   private persist(list: Client[]) {
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify(list));
-    } catch {}
+    try { localStorage.setItem(LS_KEY, JSON.stringify(list)); } catch {}
   }
 
   private uuid(): string {
