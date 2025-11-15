@@ -35,6 +35,18 @@ export class ClientsService {
     this.persist(next);
   }
 
+<<<<<<< HEAD
+=======
+  upsert(client: Client) {
+    const exists = this._clients$.value.some(c => c.id === client.id);
+    const next = exists
+      ? this._clients$.value.map(c => (c.id === client.id ? { ...c, ...client } : c))
+      : [client, ...this._clients$.value];
+    this._clients$.next(next);
+    this.persist(next);
+  }
+
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
   remove(id: string) {
     const next = this._clients$.value.filter(c => c.id !== id);
     this._clients$.next(next);

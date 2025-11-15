@@ -67,10 +67,15 @@ export class FormsService {
   }
 
   private uuid(): string {
+<<<<<<< HEAD
     try {
       return crypto.randomUUID();
     } catch {
       return Math.random().toString(36).slice(2);
     }
+=======
+    try { return crypto.randomUUID(); }
+    catch { return Math.random().toString(36).slice(2); }
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
   }
 }

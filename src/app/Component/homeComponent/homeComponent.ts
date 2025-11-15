@@ -1,7 +1,10 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+<<<<<<< HEAD
 import { FormsModule } from '@angular/forms';
+=======
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -13,7 +16,11 @@ type OpenFormCard = FormTemplate;
 @Component({
   selector: 'app-home',
   standalone: true,
+<<<<<<< HEAD
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
+=======
+  imports: [CommonModule, ReactiveFormsModule],
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
   templateUrl: './homeComponent.html',
   styleUrls: ['./homeComponent.css'],
 })
@@ -28,6 +35,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   openFormCards: OpenFormCard[] = [];
   banner: string | null = null;
   private bannerTimer?: any;
+<<<<<<< HEAD
   private subForms?: Subscription;
   private subClients?: Subscription;
 
@@ -63,6 +71,43 @@ export class HomeComponent implements OnInit, OnDestroy {
   get hasQuery() { return this.searchCtrl.value.trim().length >= 2; }
 
   get filteredClients(): Client[] {
+=======
+  private sub?: Subscription;
+
+  searchCtrl = this.fb.control<string>('', { nonNullable: true });
+  showAllClients = false;
+  selected?: Client | null = null;
+
+  editForm = this.fb.nonNullable.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    room: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]] ,
+    phone: ['', [Validators.required]],
+  });
+
+  ngOnInit(): void {
+    this.openFormCards = this.formsSvc.list();
+    this.sub = this.formsSvc.templates$.subscribe(list => (this.openFormCards = list));
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+    if (this.bannerTimer) clearTimeout(this.bannerTimer);
+  }
+
+  private setBanner(text: string, ms = 3000) {
+    this.banner = text;
+    if (this.bannerTimer) clearTimeout(this.bannerTimer);
+    this.bannerTimer = setTimeout(() => (this.banner = null), ms);
+  }
+
+  get hasOpenForms() { return this.openFormCards.length > 0; }
+  get hasQuery() { return this.searchCtrl.value.trim().length >= 2; }
+  get clients(): Client[] { return this.clientsSvc.list(); }
+
+  get filteredClients(): Client[] {
+    if (this.showAllClients) return this.clients;
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
     const q = this.searchCtrl.value.trim().toLowerCase();
     if (q.length < 2) return [];
     return this.clients.filter(c =>
@@ -70,6 +115,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
   }
 
+<<<<<<< HEAD
   goHome() {}
   openSettings() {}
 
@@ -79,6 +125,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   openForm(_card: OpenFormCard) {}
   openFormMenu(e: MouseEvent, _card: OpenFormCard) { e.stopPropagation(); }
   formatDate(iso: string) { return iso ? new Date(iso).toLocaleDateString() : ''; }
+=======
+  listAllClients(): void { this.showAllClients = true; }
+  clearSearch(): void { this.showAllClients = false; this.searchCtrl.setValue(''); }
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
 
   selectClient(c: Client) {
     this.selected = { ...c };
@@ -89,6 +139,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       phone: c.phone
     });
   }
+<<<<<<< HEAD
   cancelEdit() { this.selected = null; this.editForm.reset(); }
   editForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -126,4 +177,45 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.openFormCards = next;
     localStorage.setItem('questio.templates', JSON.stringify(next));
   }
+=======
+
+  cancelEdit() { this.selected = null; this.editForm.reset(); }
+
+  saveEdits() {
+    if (!this.selected || this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      return;
+    }
+    const idx = this.clients.findIndex(x => x.id === this.selected!.id);
+    if (idx >= 0) {
+      this.clients[idx] = { id: this.selected!.id, ...this.editForm.getRawValue() };
+      this.clientsSvc.upsert(this.clients[idx]);
+      this.setBanner(`Hóspede "${this.clients[idx].name}" atualizado`);
+    }
+    this.cancelEdit();
+  }
+
+  assignOpen = false;
+  assignFor?: Client | null = null;
+
+  assignToClient(c: Client, ev?: MouseEvent) { ev?.stopPropagation(); this.openAssign(c); }
+  editClient(c: Client, ev?: MouseEvent)   { ev?.stopPropagation(); this.selectClient(c); }
+  deleteClient(c: Client, ev?: MouseEvent) {
+    ev?.stopPropagation();
+    this.clientsSvc.remove(c.id);
+    this.setBanner(`Hóspede "${c.name}" apagado`);
+    if (this.selected?.id === c.id) this.cancelEdit();
+  }
+
+  openAssign(c: Client) { this.assignFor = c; this.assignOpen = true; }
+  closeAssign() { this.assignOpen = false; this.assignFor = null; }
+
+  goHome() {}
+  openSettings() {}
+  onClickNewForm() { this.router.navigate(['/forms/new']); }
+  onClickNewClient() { this.router.navigate(['/client/new']); }
+  openForm(_card: OpenFormCard) {}
+  openFormMenu(e: MouseEvent, _card: OpenFormCard) { e.stopPropagation(); }
+  formatDate(iso: string) { return iso ? new Date(iso).toLocaleDateString() : ''; }
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
 }

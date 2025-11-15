@@ -47,11 +47,21 @@
             [formControl]="searchCtrl"
             placeholder="Ex.: Ana Silva ou 203"
             aria-label="Buscar cliente ou quarto" />
+<<<<<<< HEAD
           <button class="btn ghost small" type="button" (click)="searchCtrl.setValue('')">Limpar</button>
         </div>
 
         <ul class="results-list" *ngIf="hasQuery && filteredClients.length">
           <li class="result-item" *ngFor="let c of filteredClients">
+=======
+
+          <button class="btn secondary small" type="button" (click)="listAllClients()">Listar todos</button>
+          <button class="btn ghost small" type="button" (click)="clearSearch()">Limpar</button>
+        </div>
+
+        <ul class="results-list" *ngIf="(showAllClients || hasQuery) && filteredClients.length">
+          <li class="result-item" *ngFor="let c of filteredClients" (click)="selectClient(c)">
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
             <div class="result-title">
               <span class="result-avatar">👤</span>
               <span class="result-name">{{ c.name }}</span>
@@ -60,14 +70,24 @@
             <div class="result-meta">{{ c.email }} • {{ c.phone }}</div>
 
             <div class="result-actions">
+<<<<<<< HEAD
               <button class="pill neutral" type="button" (click)="startAssign(c)">ATRIBUIR</button>
               <button title="Editar" class="icon-mini edit" type="button" (click)="selectClient(c)">✎</button>
               <button title="Remover" class="icon-mini danger" type="button" (click)="clientsSvc.remove(c.id)">🗑️</button>
+=======
+              <button type="button" class="btn secondary tiny" (click)="assignToClient(c, $event)">Atribuir</button>
+              <button type="button" class="icon-mini" title="Editar" (click)="editClient(c, $event)">✏️</button>
+              <button type="button" class="icon-mini" title="Apagar" (click)="deleteClient(c, $event)">🗑️</button>
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
             </div>
           </li>
         </ul>
 
+<<<<<<< HEAD
         <div class="no-results" *ngIf="hasQuery && !filteredClients.length">
+=======
+        <div class="no-results" *ngIf="(showAllClients || hasQuery) && !filteredClients.length">
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
           Nenhum cliente encontrado.
         </div>
       </div>
@@ -118,8 +138,13 @@
           </header>
 
           <div class="open-actions">
+<<<<<<< HEAD
             <button type="button" class="pill success" (click)="accessForm(c)">ACESSAR</button>
             <button type="button" class="trash-btn" (click)="deleteForm(c)" aria-label="Excluir">🗑️</button>
+=======
+            <button type="button" class="pill success" (click)="openForm(c)">ACESSAR</button>
+            <button type="button" class="trash-btn" (click)="formsSvc.deleteTemplate(c.id)" aria-label="Excluir">🗑️</button>
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
           </div>
         </article>
       </div>
@@ -130,6 +155,7 @@
     </ng-template>
   </section>
 
+<<<<<<< HEAD
   <!-- Modal de seleção de formulário -->
   <div class="modal-backdrop" *ngIf="assigningClient" (click)="closeAssign()"></div>
   <div class="modal" *ngIf="assigningClient">
@@ -159,5 +185,29 @@
         <button class="btn ghost" type="button" (click)="closeAssign()">Fechar</button>
       </div>
     </ng-template>
+=======
+  <!-- Modal de atribuição (estrutura básica para sua UI atual) -->
+  <div class="assign-backdrop" *ngIf="assignOpen" (click)="closeAssign()"></div>
+  <div class="assign-sheet" *ngIf="assignOpen">
+    <header class="sheet-head">
+      <div class="sheet-title">Atribuir formulário para {{ assignFor?.name }}</div>
+      <button type="button" class="icon-mini" (click)="closeAssign()">✖️</button>
+    </header>
+
+    <div class="sheet-body">
+      <div class="assign-list">
+        <label class="assign-item" *ngFor="let t of openFormCards">
+          <input type="radio" name="assign" [value]="t.id">
+          <span class="assign-title">{{ t.title }}</span>
+          <span class="assign-meta">Criado em {{ formatDate(t.createdAt) }}</span>
+        </label>
+      </div>
+    </div>
+
+    <footer class="sheet-actions">
+      <button class="btn ghost" type="button" (click)="closeAssign()">Cancelar</button>
+      <button class="btn primary" type="button" (click)="closeAssign()">Atribuir</button>
+    </footer>
+>>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
   </div>
 </div>
