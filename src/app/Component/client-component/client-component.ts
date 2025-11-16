@@ -18,7 +18,7 @@ export class ClientComponent {
 
   form = this.fb.nonNullable.group({
     fullName: ['', [Validators.required, Validators.minLength(3)]],
-    email: ['', [Validators.required, Validators.email]] ,
+    email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required, Validators.minLength(8)]],
     room: ['', [Validators.required]],
     checkin: ['', [Validators.required]],
@@ -28,7 +28,10 @@ export class ClientComponent {
   get f() { return this.form.controls; }
 
   save() {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     const v = this.form.getRawValue();
     this.clientsSvc.add({
       name: v.fullName.trim(),
@@ -38,8 +41,10 @@ export class ClientComponent {
       checkin: v.checkin,
       checkout: v.checkout,
     });
-    this.router.navigate(['/home']);
+    this.router.navigate(['/home'], { state: { banner: `Hóspede "${v.fullName}" criado` } });
   }
 
-  cancel() { this.router.navigate(['/home']); }
+  cancel() {
+    this.router.navigate(['/home']);
+  }
 }

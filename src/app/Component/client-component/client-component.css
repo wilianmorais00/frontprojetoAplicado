@@ -1,14 +1,21 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 .client-page{
 =======
 .home-page{
 >>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
   --blue-500:#61b5e4;
   --blue-600:#4aa5da;
+=======
+.client-page{
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
   --ink-900:#0f172a;
   --ink-700:#334155;
   --ink-500:#64748b;
+  --blue-500:#61b5e4;
+  --blue-600:#4aa5da;
   --surface:#ffffff;
+<<<<<<< HEAD
 <<<<<<< HEAD
   --card:#f7f9fb;
   --shadow: 0 10px 18px rgba(2,6,23,.06), 0 2px 6px rgba(2,6,23,.05);
@@ -16,6 +23,10 @@
 =======
   --card:#ffffff;
   --shadow: 0 10px 18px rgba(2, 6, 23, .06), 0 2px 6px rgba(2, 6, 23, .05);
+=======
+  --shadow: 0 10px 18px rgba(2,6,23,.06), 0 2px 6px rgba(2,6,23,.05);
+
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
   min-height: 100vh;
   background: var(--surface);
 >>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
@@ -23,6 +34,7 @@
   color: var(--ink-900);
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 .head{
   display:flex; align-items:center; justify-content:space-between;
@@ -37,14 +49,21 @@
 }
 =======
 .topbar{
+=======
+.head{
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
   display:flex; align-items:center; justify-content:space-between;
-  gap: 16px;
-  margin-bottom: clamp(16px, 3vw, 28px);
+  margin-bottom: clamp(16px, 3vw, 24px);
 }
+<<<<<<< HEAD
 .user-chip{ display:flex; align-items:center; gap:12px; }
 .avatar{ width:36px; height:36px; display:grid; place-items:center; border-radius:999px; background:#e9f4fb; }
 .welcome{ color:#5aa8d6; font-weight:700; letter-spacing:.3px; }
 >>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
+=======
+
+.title{ margin:0; font-size: 20px; font-weight: 800; color: var(--ink-700); }
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
 
 .actions{ display:flex; gap:10px; }
 .icon-btn{
@@ -52,17 +71,8 @@
   display:grid; place-items:center; background:#e9f4fb; cursor:pointer;
 }
 .icon-btn:hover{ background:#dbedf9; }
-.i{ width:20px; height:20px; display:block; position:relative; }
-.i-home::before{
-  content:""; position:absolute; inset:0;
-  background:
-    linear-gradient(currentColor,currentColor) 25% 65%/50% 12% no-repeat,
-    linear-gradient(currentColor,currentColor) 20% 40%/60% 40% no-repeat,
-    linear-gradient(currentColor,currentColor) 0 0/100% 0 no-repeat;
-  color:#5aa8d6;
-}
-.i-gear::before{ content:"⚙️"; position:absolute; inset:0; display:grid; place-items:center; }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 .card{
   background: var(--card);
@@ -287,46 +297,48 @@
 .icon-mini:hover{ transform: translateY(-1px); filter: brightness(.9); }
 
 .edit-card{
+=======
+.card{
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
   background:#fff; border:1px solid #e5e7eb; border-radius:12px;
   padding:16px; box-shadow: var(--shadow);
 }
-.edit-title{ margin:0 0 12px; font-size:16px; color:var(--ink-700); font-weight:700; }
-.edit-form{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+
+.block{ display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+.label{ font-size:12px; color:var(--ink-500); font-weight:700; }
+
+.input{
+  height:40px; border:1px solid #e5e7eb; border-radius:10px;
+  padding:0 12px; outline:none;
+}
+.input:focus{ border-color:#cbd5e1; box-shadow:0 0 0 3px rgba(97,181,228,.18); }
+
+.grid-two{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+.grid-three{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; }
+
 .field{ display:flex; flex-direction:column; gap:6px; }
-.field-label{ font-size:12px; color:var(--ink-500); }
-.field-input{
-  height:40px; border:1px solid #e5e7eb; border-radius:10px; padding:0 12px; outline:none;
-  transition: box-shadow .15s ease, border-color .15s ease;
-}
-.field-input:focus{ border-color:#cbd5e1; box-shadow: 0 0 0 3px rgba(97,181,228,.18); }
-.edit-actions{ grid-column: 1 / -1; display:flex; justify-content:flex-end; gap:10px; margin-top:6px; }
+.sub{ font-size:12px; color:var(--ink-500); }
 
-.toast{ margin: 12px 0 0; padding: 12px 14px; border-radius: 10px; font-weight: 700; box-shadow: var(--shadow); }
-.toast.success{ background:#34d399; color:#0b3b2d; }
+.err{ font-size:12px; color:#b91c1c; }
 
-.assign-backdrop{ position: fixed; inset:0; background: rgba(15, 23, 42, .45); z-index: 40; }
-.assign-modal{
-  position: fixed; left: 50%; top: 10%; transform: translateX(-50%);
-  width: min(720px, 92vw); background: #fff; border-radius: 14px; box-shadow: var(--shadow);
-  display: grid; grid-template-rows: auto 1fr auto; z-index: 41;
+.actions-row{
+  display:flex; gap:10px; margin-top:12px;
 }
-.assign-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #e5e7eb; }
-.assign-title{ font-weight:700; color:#334155; }
-.assign-close{ border:0; background:transparent; font-size:18px; cursor:pointer; }
-.assign-list{ max-height: 50vh; overflow:auto; padding: 8px 16px; display:grid; gap:8px; }
-.assign-item{ display:grid; grid-template-columns: 22px 1fr auto; align-items:center; gap:10px; padding:10px; border:1px solid #e5e7eb; border-radius:10px; }
-.assign-item-title{ font-weight:700; color:#334155; }
-.assign-item-meta{ font-size:12px; color:#64748b; }
-.assign-actions{ display:flex; justify-content:flex-end; gap:10px; padding: 12px 16px; border-top:1px solid #e5e7eb; }
 
-@media (max-width: 1024px){
-  .open-grid{ grid-template-columns: 1fr; }
-  .manage-area{ grid-template-columns: 1fr; }
-}
+.btn{ height:38px; padding:0 14px; border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:700; }
+.btn.success{ background:#22c55e; color:#fff; }
+.btn.success:hover{ filter: brightness(.95); }
+.btn.danger{ background:#f1f5f9; color:#0f172a; border-color:#e5e7eb; }
+.btn.danger:hover{ background:#e2e8f0; }
+
 @media (max-width: 640px){
+<<<<<<< HEAD
   .topbar{ flex-direction: column; align-items: flex-start; gap:8px; }
   .templates-layout{ grid-template-columns: 1fr; }
   .side-action{ width: 100%; height: auto; }
   .edit-form{ grid-template-columns: 1fr; }
 >>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
+=======
+  .grid-two, .grid-three{ grid-template-columns:1fr; }
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
 }

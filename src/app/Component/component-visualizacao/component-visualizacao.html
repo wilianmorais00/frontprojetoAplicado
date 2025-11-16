@@ -1,0 +1,47 @@
+<div class="visu-page">
+  <!-- Topbar: apenas breadcrumb à esquerda e casinha à direita -->
+  <header class="topbar">
+    <div class="left">
+      <span class="crumb">PAINEL GERENCIAL DE RESPOSTAS</span>
+    </div>
+    <div class="right">
+      <button class="icon-btn" (click)="goHome()" aria-label="Início" title="Início">🏠</button>
+    </div>
+  </header>
+
+  <section class="card head-card" *ngIf="form">
+    <h1 class="page-title">Respostas – {{ form.title }}</h1>
+    <div class="meta">
+      <span>Criado em: {{ formatDate(form.createdAt) }}</span>
+      <span>•</span>
+      <span>Total de respostas: {{ form.totalAnswers || 0 }}</span>
+      <span>•</span>
+      <span>Última: {{ formatDate(form.lastAnswerAt) || '—' }}</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">Perguntas do formulário</h2>
+
+    <div class="q-list" *ngIf="rows.length; else noQuestions">
+      <div class="q-item" *ngFor="let r of rows">
+        <div class="q-top">
+          <div class="q-prompt">{{ r.prompt }}</div>
+          <span class="q-type">Tipo: {{ r.type }}</span>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noQuestions>
+      <div class="empty">Nenhuma pergunta cadastrada no formulário.</div>
+    </ng-template>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">Respostas</h2>
+    <p class="muted">
+      Ainda não implementamos o serviço de respostas. Em seguida criaremos um
+      <code>responses-service</code> para listar/agregar as respostas aqui.
+    </p>
+  </section>
+</div>

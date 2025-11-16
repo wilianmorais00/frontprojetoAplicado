@@ -33,6 +33,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   username = 'USUÁRIO';
 
   openFormCards: OpenFormCard[] = [];
+<<<<<<< HEAD
   banner: string | null = null;
   private bannerTimer?: any;
 <<<<<<< HEAD
@@ -72,18 +73,27 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   get filteredClients(): Client[] {
 =======
+=======
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
   private sub?: Subscription;
 
+  // Busca/listagem de clientes
   searchCtrl = this.fb.control<string>('', { nonNullable: true });
   showAllClients = false;
   selected?: Client | null = null;
 
+  // Edição de cliente
   editForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     room: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email]] ,
+    email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required]],
   });
+
+  // Modal de atribuição
+  assignOpen = false;
+  assignFor?: Client | null = null;
+  assignSelectedTemplateId: string | null = null;
 
   ngOnInit(): void {
     this.openFormCards = this.formsSvc.list();
@@ -92,16 +102,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
-    if (this.bannerTimer) clearTimeout(this.bannerTimer);
   }
 
-  private setBanner(text: string, ms = 3000) {
-    this.banner = text;
-    if (this.bannerTimer) clearTimeout(this.bannerTimer);
-    this.bannerTimer = setTimeout(() => (this.banner = null), ms);
-  }
-
+  // Helpers
   get hasOpenForms() { return this.openFormCards.length > 0; }
+  get templates(): FormTemplate[] { return this.formsSvc.list(); }
   get hasQuery() { return this.searchCtrl.value.trim().length >= 2; }
   get clients(): Client[] { return this.clientsSvc.list(); }
 
@@ -130,15 +135,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   clearSearch(): void { this.showAllClients = false; this.searchCtrl.setValue(''); }
 >>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
 
+  // Edição de cliente
   selectClient(c: Client) {
     this.selected = { ...c };
     this.editForm.setValue({
       name: c.name,
       room: c.room,
       email: c.email,
-      phone: c.phone
+      phone: c.phone,
     });
   }
+<<<<<<< HEAD
 <<<<<<< HEAD
   cancelEdit() { this.selected = null; this.editForm.reset(); }
   editForm = this.fb.nonNullable.group({
@@ -181,6 +188,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   cancelEdit() { this.selected = null; this.editForm.reset(); }
 
+=======
+  cancelEdit() {
+    this.selected = null;
+    this.editForm.reset();
+  }
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
   saveEdits() {
     if (!this.selected || this.editForm.invalid) {
       this.editForm.markAllAsTouched();
@@ -190,32 +203,67 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (idx >= 0) {
       this.clients[idx] = { id: this.selected!.id, ...this.editForm.getRawValue() };
       this.clientsSvc.upsert(this.clients[idx]);
-      this.setBanner(`Hóspede "${this.clients[idx].name}" atualizado`);
     }
     this.cancelEdit();
   }
 
-  assignOpen = false;
-  assignFor?: Client | null = null;
-
-  assignToClient(c: Client, ev?: MouseEvent) { ev?.stopPropagation(); this.openAssign(c); }
-  editClient(c: Client, ev?: MouseEvent)   { ev?.stopPropagation(); this.selectClient(c); }
-  deleteClient(c: Client, ev?: MouseEvent) {
+  // Atribuição (modal pequeno com X de fechar)
+  assignToClient(c: Client, ev?: MouseEvent) {
     ev?.stopPropagation();
-    this.clientsSvc.remove(c.id);
-    this.setBanner(`Hóspede "${c.name}" apagado`);
-    if (this.selected?.id === c.id) this.cancelEdit();
+    this.openAssign(c);
+  }
+  openAssign(c: Client) {
+    this.assignFor = c;
+    this.assignSelectedTemplateId = c.assignedFormId ?? null;
+    this.assignOpen = true;
+  }
+  closeAssign() {
+    this.assignOpen = false;
+    this.assignFor = null;
+    this.assignSelectedTemplateId = null;
+  }
+  confirmAssign() {
+    if (!this.assignFor || !this.assignSelectedTemplateId) return;
+    this.clientsSvc.assignToForm(this.assignFor.id, this.assignSelectedTemplateId);
+    this.closeAssign();
   }
 
-  openAssign(c: Client) { this.assignFor = c; this.assignOpen = true; }
-  closeAssign() { this.assignOpen = false; this.assignFor = null; }
-
+  // Ações gerais
   goHome() {}
   openSettings() {}
   onClickNewForm() { this.router.navigate(['/forms/new']); }
   onClickNewClient() { this.router.navigate(['/client/new']); }
-  openForm(_card: OpenFormCard) {}
+
+  // >>> ESTE é o “Acessar” que funcionava (leva à visualização):
+  openForm(card: OpenFormCard) {
+    this.router.navigate(['/forms/answers', card.id]);
+  }
+
   openFormMenu(e: MouseEvent, _card: OpenFormCard) { e.stopPropagation(); }
   formatDate(iso: string) { return iso ? new Date(iso).toLocaleDateString() : ''; }
+<<<<<<< HEAD
 >>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
+=======
+
+  // Excluir formulário (sumir card)
+  deleteForm(card: OpenFormCard, ev?: MouseEvent) {
+    ev?.stopPropagation();
+    this.formsSvc.deleteTemplate(card.id);
+    this.openFormCards = this.formsSvc.list();
+  }
+
+  // Ações nos cards de cliente
+  editClient(c: Client, ev?: MouseEvent) { ev?.stopPropagation(); this.selectClient(c); }
+  deleteClient(c: Client, ev?: MouseEvent) {
+    ev?.stopPropagation();
+    this.clientsSvc.remove(c.id);
+    if (this.selected?.id === c.id) this.cancelEdit();
+  }
+
+  getTemplateTitleById(id?: string | null): string | undefined {
+    if (!id) return undefined;
+    const found = this.formsSvc.list().find(t => t.id === id);
+    return found?.title;
+  }
+>>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
 }
