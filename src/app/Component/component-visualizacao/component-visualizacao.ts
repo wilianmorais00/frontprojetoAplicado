@@ -95,7 +95,6 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
       }
     }
 
-
     for (const q of questions) {
       const s = out[q.id];
       if (q.type === 'slider') {

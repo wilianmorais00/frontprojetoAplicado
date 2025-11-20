@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FormsService } from '../../Service/forms-service';
 
 type BlockType = 'sticker' | 'bar' | 'stars' | 'text';
 
@@ -21,23 +22,45 @@ export class PublicFormComponent {
   brand = 'QuestIO';
   hotel = new URLSearchParams(location.search).get('hotel') ?? 'HOTEL AB';
 
-  private queryQ = (new URLSearchParams(location.search).get('q') ?? 'sticker,bar,stars,text,sticker')
-    .split(',')
-    .map(s => s.trim().toLowerCase())
-    .filter(Boolean) as BlockType[];
+  private formsSvc = inject(FormsService);
 
-  blocks: Block[] = this.queryQ.map((t, i) => ({
-    id: `q${i + 1}`,
-    type: (['sticker', 'bar', 'stars', 'text'].includes(t) ? t : 'sticker') as BlockType,
-    title: 'COMO VOCÊ AVALIA SUA ESTADIA'
-  }));
-
+  blocks: Block[] = [];
   answers: Record<string, any> = {};
 
   mode: 'form' | 'review' | 'done' = 'form';
   idx = 0;
   doneAt = '';
   requiredError = false;
+
+  constructor() {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    const qParam = params.get('q');
+
+    if (id) {
+      const tpl = this.formsSvc.getById(id);
+      if (tpl) {
+        this.blocks = (tpl.questions || []).map(q => ({
+          id: q.id,
+          type: (q.type === 'slider' ? 'bar' : q.type) as BlockType,
+          title: q.prompt || 'COMO VOCÊ AVALIA SUA ESTADIA',
+        }));
+      }
+    }
+
+    if (this.blocks.length === 0) {
+      const queryQ = (qParam ?? 'sticker,bar,stars,text,sticker')
+        .split(',')
+        .map(s => s.trim().toLowerCase())
+        .filter(Boolean) as BlockType[];
+
+      this.blocks = queryQ.map((t, i) => ({
+        id: `q${i + 1}`,
+        type: (['sticker', 'bar', 'stars', 'text'].includes(t) ? t : 'sticker') as BlockType,
+        title: 'COMO VOCÊ AVALIA SUA ESTADIA',
+      }));
+    }
+  }
 
   get current(): Block | null {
     return this.mode === 'form' ? this.blocks[this.idx] ?? null : null;
