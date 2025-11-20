@@ -14,6 +14,7 @@ export interface FormQuestion {
 export interface FormTemplate {
   id: string;
   title: string;
+  description?: string;
   createdAt: string;
   questions: FormQuestion[];
   totalAnswers: number;
@@ -35,10 +36,11 @@ export class FormsService {
     return this._templates$.value.find(t => t.id === id) ?? null;
   }
 
-  addTemplate(input: { title: string; questions: FormQuestion[] }): FormTemplate {
+  addTemplate(input: { title: string; description?: string; questions: FormQuestion[] }): FormTemplate {
     const t: FormTemplate = {
       id: this.uuid(),
       title: input.title.trim(),
+      description: input.description?.trim() ?? '', // 👈 guarda a descrição
       createdAt: new Date().toISOString(),
       questions: input.questions ?? [],
       totalAnswers: 0,

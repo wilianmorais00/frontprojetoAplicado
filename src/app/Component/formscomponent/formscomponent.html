@@ -24,6 +24,17 @@
       <label class="label">TÍTULO:</label>
       <input class="input" type="text" [formControl]="form.controls.title" placeholder="Título do formulário" />
     </div>
+
+    <!-- 👇 NOVO BLOCO: DESCRIÇÃO DO FORMULÁRIO -->
+    <div class="block">
+      <label class="label">DESCRIÇÃO DO FORMULÁRIO:</label>
+      <textarea
+        class="textarea"
+        rows="3"
+        [formControl]="form.controls.description"
+        placeholder="Explique brevemente para o hóspede o objetivo deste formulário">
+      </textarea>
+    </div>
   </section>
 
   <section class="questions">

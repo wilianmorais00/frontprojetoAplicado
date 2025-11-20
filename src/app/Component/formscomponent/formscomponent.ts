@@ -28,6 +28,7 @@ export class FormsComponent {
 
   form = this.fb.group({
     title: this.fb.control('', { validators: [Validators.required, Validators.minLength(3)] }),
+    description: [''], 
     questions: this.fb.array<QuestionFormGroup>([])
   });
 
@@ -87,6 +88,7 @@ export class FormsComponent {
 
     const payload = {
       title: this.form.controls.title.value,
+      description: this.form.controls.description.value, // 👈 passa a descrição
       questions: this.questions.controls.map((q, order) => ({
         id: q.controls.id.value,
         prompt: q.controls.prompt.value,
