@@ -1,19 +1,31 @@
 <div class="home-page">
   <header class="topbar">
-    <div class="user-chip">
-      <span class="avatar" aria-hidden="true">👤</span>
-      <span class="welcome">BEM-VINDO</span>
-    </div>
+  <div class="user-chip">
+    <span class="welcome">Olá {{ username }}</span>
+  </div>
+  <nav class="actions">
+    <button class="btn secondary" type="button" (click)="openUsers()">
+      Cadastro de Usuário
+    </button>
 
-    <nav class="actions">
-      <button class="icon-btn" (click)="goHome()" aria-label="Início" title="Início">
-        <span class="i i-home"></span>
-      </button>
-      <button class="icon-btn" (click)="openSettings()" aria-label="Configurações" title="Configurações">
-        <span class="i i-gear"></span>
-      </button>
-    </nav>
-  </header>
+    <button class="icon-btn" (click)="openSettings()" aria-label="Configurações" title="Configurações">
+      <span class="i i-gear"></span>
+    </button>
+  </nav>
+</header>
+
+  <div
+    *ngIf="flashMsg"
+    class="flash"
+    [class.flash-success]="flashKind==='success'"
+    [class.flash-info]="flashKind==='info'"
+    [class.flash-danger]="flashKind==='danger'">
+    {{ flashMsg }}
+  </div>
+
+  <ng-container *ngIf="settingsOpen">
+    <app-component-configuration (closed)="closeSettings()"></app-component-configuration>
+  </ng-container>
 
   <section class="section">
     <h2 class="section-title">NOVOS DADOS</h2>
@@ -47,13 +59,6 @@
             [formControl]="searchCtrl"
             placeholder="Ex.: Ana Silva ou 203"
             aria-label="Buscar cliente ou quarto" />
-<<<<<<< HEAD
-          <button class="btn ghost small" type="button" (click)="searchCtrl.setValue('')">Limpar</button>
-        </div>
-
-        <ul class="results-list" *ngIf="hasQuery && filteredClients.length">
-          <li class="result-item" *ngFor="let c of filteredClients">
-=======
 
           <button class="btn secondary small" type="button" (click)="listAllClients()">
             Listar todos
@@ -66,7 +71,6 @@
 
         <ul class="results-list" *ngIf="(showAllClients || hasQuery) && filteredClients.length">
           <li class="result-item" *ngFor="let c of filteredClients" (click)="selectClient(c)">
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
             <div class="result-title">
               <span class="result-avatar">👤</span>
               <span class="result-name">{{ c.name }}</span>
@@ -74,18 +78,6 @@
             </div>
             <div class="result-meta">{{ c.email }} • {{ c.phone }}</div>
 
-<<<<<<< HEAD
-            <div class="result-actions">
-<<<<<<< HEAD
-              <button class="pill neutral" type="button" (click)="startAssign(c)">ATRIBUIR</button>
-              <button title="Editar" class="icon-mini edit" type="button" (click)="selectClient(c)">✎</button>
-              <button title="Remover" class="icon-mini danger" type="button" (click)="clientsSvc.remove(c.id)">🗑️</button>
-=======
-              <button type="button" class="btn secondary tiny" (click)="assignToClient(c, $event)">Atribuir</button>
-              <button type="button" class="icon-mini" title="Editar" (click)="editClient(c, $event)">✏️</button>
-              <button type="button" class="icon-mini" title="Apagar" (click)="deleteClient(c, $event)">🗑️</button>
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
-=======
             <div class="client-actions">
               <button class="btn pill" (click)="assignToClient(c, $event)">Atribuir</button>
               <button class="icon-only" title="Editar" (click)="editClient(c, $event)">✎</button>
@@ -94,16 +86,11 @@
 
             <div class="assigned" *ngIf="c.assignedFormId">
               Atribuído: {{ getTemplateTitleById(c.assignedFormId) }}
->>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
             </div>
           </li>
         </ul>
 
-<<<<<<< HEAD
-        <div class="no-results" *ngIf="hasQuery && !filteredClients.length">
-=======
         <div class="no-results" *ngIf="(showAllClients || hasQuery) && !filteredClients.length">
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
           Nenhum cliente encontrado.
         </div>
       </div>
@@ -152,17 +139,8 @@
           </header>
 
           <div class="open-actions">
-<<<<<<< HEAD
-            <button type="button" class="pill success" (click)="accessForm(c)">ACESSAR</button>
-            <button type="button" class="trash-btn" (click)="deleteForm(c)" aria-label="Excluir">🗑️</button>
-=======
             <button type="button" class="pill success" (click)="openForm(c)">ACESSAR</button>
-<<<<<<< HEAD
-            <button type="button" class="trash-btn" (click)="formsSvc.deleteTemplate(c.id)" aria-label="Excluir">🗑️</button>
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
-=======
             <button type="button" class="trash-btn" (click)="deleteForm(c)" aria-label="Excluir">🗑️</button>
->>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
           </div>
         </article>
       </div>
@@ -173,42 +151,7 @@
     </ng-template>
   </section>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-  <!-- Modal de seleção de formulário -->
-  <div class="modal-backdrop" *ngIf="assigningClient" (click)="closeAssign()"></div>
-  <div class="modal" *ngIf="assigningClient">
-    <div class="modal-head">
-      <h3 class="modal-title">Atribuir formulário para {{ assigningClient?.name }}</h3>
-      <button class="icon-mini danger" type="button" (click)="closeAssign()">✖</button>
-    </div>
-
-    <div class="modal-body" *ngIf="openFormCards.length; else noForms">
-      <ul class="modal-list">
-        <li class="modal-item" *ngFor="let f of openFormCards" (click)="selectedTemplateId = f.id"
-            [class.active]="selectedTemplateId === f.id">
-          <div class="mi-title">{{ f.title }}</div>
-          <div class="mi-meta">Criado em {{ formatDate(f.createdAt) }}</div>
-          <input type="radio" name="tpl" [checked]="selectedTemplateId === f.id" />
-        </li>
-      </ul>
-      <div class="modal-actions">
-        <button class="btn ghost" type="button" (click)="closeAssign()">Cancelar</button>
-        <button class="btn primary" type="button" [disabled]="!selectedTemplateId" (click)="confirmAssign()">Atribuir</button>
-      </div>
-    </div>
-
-    <ng-template #noForms>
-      <div class="no-forms">Nenhum formulário disponível.</div>
-      <div class="modal-actions">
-        <button class="btn ghost" type="button" (click)="closeAssign()">Fechar</button>
-      </div>
-    </ng-template>
-=======
-  <!-- Modal de atribuição (estrutura básica para sua UI atual) -->
-=======
-  <!-- Modal pequeno de atribuição (versão antiga que você usava) -->
->>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
+  <!-- Modal de atribuição -->
   <div class="assign-backdrop" *ngIf="assignOpen" (click)="closeAssign()"></div>
   <div class="assign-modal" *ngIf="assignOpen" role="dialog" aria-modal="true">
     <header class="assign-head">
@@ -217,7 +160,7 @@
     </header>
 
     <div class="assign-list">
-      <label class="assign-row" *ngFor="let t of templates">
+      <label class="assign-row" *ngFor="let t of availableTemplates">
         <input
           type="radio"
           name="template"
@@ -232,6 +175,5 @@
       <button class="btn ghost" (click)="closeAssign()">Cancelar</button>
       <button class="btn primary" [disabled]="!assignSelectedTemplateId" (click)="confirmAssign()">Atribuir</button>
     </footer>
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
   </div>
 </div>

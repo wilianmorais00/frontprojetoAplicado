@@ -1,26 +1,20 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-<<<<<<< HEAD
 import { FormsModule } from '@angular/forms';
-=======
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-
-import { FormsService, FormTemplate } from '../../Service/forms-service/forms-service';
-import { ClientsService, Client } from '../../Service/forms-service/client-service';
+import { ComponentConfiguration } from '../component-configuration/component-configuration';
+import { FormsService, FormTemplate } from '../../Service/forms-service';
+import { ClientsService, Client } from '../../Service/client-service';
+import { AuthService } from '../../Service/auth-service';
 
 type OpenFormCard = FormTemplate;
 
 @Component({
   selector: 'app-home',
   standalone: true,
-<<<<<<< HEAD
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
-=======
-  imports: [CommonModule, ReactiveFormsModule],
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ComponentConfiguration],
   templateUrl: './homeComponent.html',
   styleUrls: ['./homeComponent.css'],
 })
@@ -29,60 +23,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private formsSvc = inject(FormsService);
   private clientsSvc = inject(ClientsService);
+  private auth = inject(AuthService);
 
   username = 'USUÁRIO';
 
   openFormCards: OpenFormCard[] = [];
-<<<<<<< HEAD
-  banner: string | null = null;
-  private bannerTimer?: any;
-<<<<<<< HEAD
-  private subForms?: Subscription;
-  private subClients?: Subscription;
-
-  clients: Client[] = [];
-  searchCtrl = this.fb.control<string>('', { nonNullable: true });
-  selected?: Client | null = null;
-
-  assigningClient: Client | null = null;
-  selectedTemplateId: string | null = null;
-
-  ngOnInit(): void {
-    this.openFormCards = this.formsSvc.list();
-    this.subForms = this.formsSvc.templates$.subscribe(list => (this.openFormCards = list));
-
-    this.clients = this.clientsSvc.list();
-    this.subClients = this.clientsSvc.clients$.subscribe(list => (this.clients = list));
-
-    const state = history.state as { banner?: string };
-    if (state?.banner) {
-      this.banner = state.banner;
-      queueMicrotask(() => history.replaceState({}, document.title));
-      this.bannerTimer = setTimeout(() => (this.banner = null), 4000);
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.subForms?.unsubscribe();
-    this.subClients?.unsubscribe();
-    if (this.bannerTimer) clearTimeout(this.bannerTimer);
-  }
-
-  get hasOpenForms() { return this.openFormCards.length > 0; }
-  get hasQuery() { return this.searchCtrl.value.trim().length >= 2; }
-
-  get filteredClients(): Client[] {
-=======
-=======
->>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
   private sub?: Subscription;
+  private subAuth?: Subscription;
 
-  // Busca/listagem de clientes
   searchCtrl = this.fb.control<string>('', { nonNullable: true });
   showAllClients = false;
   selected?: Client | null = null;
 
-  // Edição de cliente
   editForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     room: ['', [Validators.required]],
@@ -90,29 +42,48 @@ export class HomeComponent implements OnInit, OnDestroy {
     phone: ['', [Validators.required]],
   });
 
-  // Modal de atribuição
+  settingsOpen = false;
+
   assignOpen = false;
   assignFor?: Client | null = null;
   assignSelectedTemplateId: string | null = null;
 
+  flashMsg: string | null = null;
+  flashKind: 'success' | 'info' | 'danger' = 'success';
+  private flashTimer: any;
+  private showFlash(msg: string, kind: 'success' | 'info' | 'danger' = 'success') {
+    this.flashMsg = msg;
+    this.flashKind = kind;
+    if (this.flashTimer) clearTimeout(this.flashTimer);
+    this.flashTimer = setTimeout(() => (this.flashMsg = null), 3500);
+  }
+
   ngOnInit(): void {
     this.openFormCards = this.formsSvc.list();
     this.sub = this.formsSvc.templates$.subscribe(list => (this.openFormCards = list));
+
+    this.username = this.auth.current?.name ?? 'USUÁRIO';
+    this.subAuth = this.auth.current$.subscribe(u => {
+      this.username = u?.name ?? 'USUÁRIO';
+    });
   }
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+    this.subAuth?.unsubscribe();
   }
 
-  // Helpers
   get hasOpenForms() { return this.openFormCards.length > 0; }
   get templates(): FormTemplate[] { return this.formsSvc.list(); }
   get hasQuery() { return this.searchCtrl.value.trim().length >= 2; }
   get clients(): Client[] { return this.clientsSvc.list(); }
+  get availableTemplates(): FormTemplate[] {
+    const currentId = this.assignFor?.assignedFormId ?? null;
+    return this.formsSvc.list().filter(t => t.id !== currentId);
+  }
 
   get filteredClients(): Client[] {
     if (this.showAllClients) return this.clients;
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
     const q = this.searchCtrl.value.trim().toLowerCase();
     if (q.length < 2) return [];
     return this.clients.filter(c =>
@@ -120,22 +91,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
   }
 
-<<<<<<< HEAD
-  goHome() {}
-  openSettings() {}
-
-  onClickNewForm() { this.router.navigate(['/forms/new']); }
-  onClickNewClient() { this.router.navigate(['/client/new']); }
-
-  openForm(_card: OpenFormCard) {}
-  openFormMenu(e: MouseEvent, _card: OpenFormCard) { e.stopPropagation(); }
-  formatDate(iso: string) { return iso ? new Date(iso).toLocaleDateString() : ''; }
-=======
   listAllClients(): void { this.showAllClients = true; }
   clearSearch(): void { this.showAllClients = false; this.searchCtrl.setValue(''); }
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
 
-  // Edição de cliente
   selectClient(c: Client) {
     this.selected = { ...c };
     this.editForm.setValue({
@@ -145,119 +103,82 @@ export class HomeComponent implements OnInit, OnDestroy {
       phone: c.phone,
     });
   }
-<<<<<<< HEAD
-<<<<<<< HEAD
-  cancelEdit() { this.selected = null; this.editForm.reset(); }
-  editForm = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    room: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required]],
-  });
-  saveEdits() {
-    if (!this.selected || this.editForm.invalid) { this.editForm.markAllAsTouched(); return; }
-    this.clientsSvc.update(this.selected.id, this.editForm.getRawValue());
-    this.cancelEdit();
-  }
 
-  startAssign(c: Client) {
-    this.assigningClient = c;
-    this.selectedTemplateId = this.openFormCards[0]?.id ?? null;
-  }
-  confirmAssign() {
-    if (!this.assigningClient || !this.selectedTemplateId) return;
-    this.clientsSvc.assignToForm(this.assigningClient.id, this.selectedTemplateId);
-    const name = this.assigningClient.name;
-    this.closeAssign();
-    this.banner = `Hóspede "${name}" atribuído ao formulário.`;
-    if (this.bannerTimer) clearTimeout(this.bannerTimer);
-    this.bannerTimer = setTimeout(() => (this.banner = null), 3000);
-  }
-  closeAssign() {
-    this.assigningClient = null;
-    this.selectedTemplateId = null;
-  }
-
-  accessForm(_c: OpenFormCard) {}
-  deleteForm(c: OpenFormCard) {
-    const next = this.openFormCards.filter(x => x.id !== c.id);
-    this.openFormCards = next;
-    localStorage.setItem('questio.templates', JSON.stringify(next));
-  }
-=======
-
-  cancelEdit() { this.selected = null; this.editForm.reset(); }
-
-=======
   cancelEdit() {
     this.selected = null;
     this.editForm.reset();
   }
->>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
+
   saveEdits() {
     if (!this.selected || this.editForm.invalid) {
       this.editForm.markAllAsTouched();
       return;
     }
-    const idx = this.clients.findIndex(x => x.id === this.selected!.id);
-    if (idx >= 0) {
-      this.clients[idx] = { id: this.selected!.id, ...this.editForm.getRawValue() };
-      this.clientsSvc.upsert(this.clients[idx]);
+
+    const current = this.clients.find(x => x.id === this.selected!.id);
+    if (!current) {
+      this.cancelEdit();
+      return;
     }
+
+    const form = this.editForm.getRawValue();
+    const updated: Client = {
+      ...current,
+      name: form.name!,
+      room: form.room!,
+      email: form.email!,
+      phone: form.phone!,
+    };
+
+    this.clientsSvc.upsert(updated);
+    this.showFlash(`Dados de ${updated.name} atualizados com sucesso.`, 'info');
     this.cancelEdit();
   }
 
-  // Atribuição (modal pequeno com X de fechar)
-  assignToClient(c: Client, ev?: MouseEvent) {
-    ev?.stopPropagation();
-    this.openAssign(c);
-  }
-  openAssign(c: Client) {
-    this.assignFor = c;
-    this.assignSelectedTemplateId = c.assignedFormId ?? null;
-    this.assignOpen = true;
-  }
-  closeAssign() {
-    this.assignOpen = false;
-    this.assignFor = null;
-    this.assignSelectedTemplateId = null;
-  }
+  assignToClient(c: Client, ev?: MouseEvent) { ev?.stopPropagation(); this.openAssign(c); }
+  openAssign(c: Client) { this.assignFor = c; this.assignSelectedTemplateId = null; this.assignOpen = true; }
+  closeAssign() { this.assignOpen = false; this.assignFor = null; this.assignSelectedTemplateId = null; }
+
   confirmAssign() {
     if (!this.assignFor || !this.assignSelectedTemplateId) return;
+
+    if (this.assignFor.assignedFormId === this.assignSelectedTemplateId) {
+      const t = this.formsSvc.list().find(x => x.id === this.assignSelectedTemplateId);
+      this.showFlash(
+        `Hóspede já possui o formulário ${t?.title ?? ''}. Remova para reatribuir.`,
+        'info'
+      );
+      return;
+    }
+
     this.clientsSvc.assignToForm(this.assignFor.id, this.assignSelectedTemplateId);
+    const tpl = this.formsSvc.list().find(x => x.id === this.assignSelectedTemplateId);
+    this.showFlash(`Formulário ${tpl?.title ?? ''} atribuído a ${this.assignFor.name}.`, 'success');
     this.closeAssign();
   }
 
-  // Ações gerais
   goHome() {}
-  openSettings() {}
+  openSettings() { this.settingsOpen = true; }
+  closeSettings() { this.settingsOpen = false; }
   onClickNewForm() { this.router.navigate(['/forms/new']); }
   onClickNewClient() { this.router.navigate(['/client/new']); }
-
-  // >>> ESTE é o “Acessar” que funcionava (leva à visualização):
-  openForm(card: OpenFormCard) {
-    this.router.navigate(['/forms/answers', card.id]);
-  }
-
+  openForm(card: OpenFormCard) { this.router.navigate(['/forms/answers', card.id]); }
   openFormMenu(e: MouseEvent, _card: OpenFormCard) { e.stopPropagation(); }
   formatDate(iso: string) { return iso ? new Date(iso).toLocaleDateString() : ''; }
-<<<<<<< HEAD
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
-=======
 
-  // Excluir formulário (sumir card)
   deleteForm(card: OpenFormCard, ev?: MouseEvent) {
     ev?.stopPropagation();
     this.formsSvc.deleteTemplate(card.id);
+    this.showFlash(`Formulário ${card.title} excluído.`, 'danger');
     this.openFormCards = this.formsSvc.list();
   }
 
-  // Ações nos cards de cliente
   editClient(c: Client, ev?: MouseEvent) { ev?.stopPropagation(); this.selectClient(c); }
   deleteClient(c: Client, ev?: MouseEvent) {
     ev?.stopPropagation();
     this.clientsSvc.remove(c.id);
     if (this.selected?.id === c.id) this.cancelEdit();
+    this.showFlash(`Hóspede ${c.name} excluído.`, 'danger');
   }
 
   getTemplateTitleById(id?: string | null): string | undefined {
@@ -265,5 +186,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     const found = this.formsSvc.list().find(t => t.id === id);
     return found?.title;
   }
->>>>>>> 6e7b177 (chore: atualiza componentes e rotas)
+
+  openUsers() { this.router.navigate(['/users']); }
 }

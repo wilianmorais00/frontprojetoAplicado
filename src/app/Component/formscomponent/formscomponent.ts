@@ -1,16 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormArray,
-  FormControl,
-  FormGroup,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { FormArray, FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
-import { FormsService } from '../../Service/forms-service/forms-service';
+import { FormsService } from '../../Service/forms-service';
 
 type QuestionType = 'sticker' | 'slider' | 'text' | 'stars';
 
@@ -18,6 +11,7 @@ type QuestionFormGroup = FormGroup<{
   id: FormControl<string>;
   prompt: FormControl<string>;
   type: FormControl<QuestionType>;
+  required: FormControl<boolean>;
 }>;
 
 @Component({
@@ -37,6 +31,17 @@ export class FormsComponent {
     questions: this.fb.array<QuestionFormGroup>([])
   });
 
+  flashMsg: string | null = null;
+  flashKind: 'success' | 'info' | 'danger' = 'success';
+  private flashTimer: any;
+
+  private showFlash(msg: string, kind: 'success' | 'info' | 'danger' = 'success') {
+    this.flashMsg = msg;
+    this.flashKind = kind;
+    if (this.flashTimer) clearTimeout(this.flashTimer);
+    this.flashTimer = setTimeout(() => (this.flashMsg = null), 3500);
+  }
+
   get questions(): FormArray<QuestionFormGroup> {
     return this.form.get('questions') as FormArray<QuestionFormGroup>;
   }
@@ -49,7 +54,8 @@ export class FormsComponent {
     return this.fb.group({
       id: this.fb.control(this.uuid()),
       prompt: this.fb.control('', { validators: [Validators.required, Validators.minLength(3)] }),
-      type: this.fb.control<QuestionType>('sticker')
+      type: this.fb.control<QuestionType>('sticker'),
+      required: this.fb.control(false)
     });
   }
 
@@ -85,13 +91,13 @@ export class FormsComponent {
         id: q.controls.id.value,
         prompt: q.controls.prompt.value,
         type: q.controls.type.value,
-        order
+        order,
+        required: q.controls.required.value
       }))
     };
 
-    this.formsService.addTemplate(payload);
-    alert('Formulário salvo e disponível para envio');
-    this.router.navigate(['/home']);
+    const created = this.formsService.addTemplate(payload);
+    this.showFlash(`Formulário ${created.title} criado e disponível para atribuir a hóspedes.`, 'success');
   }
 
   cancel() {

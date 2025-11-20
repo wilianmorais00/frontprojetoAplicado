@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../Service/auth-service'; 
 
 @Component({
   selector: 'app-login',
@@ -12,11 +13,12 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
-  private routes = inject(Router);
+  private router = inject(Router);
+  private auth = inject(AuthService);
 
   form = this.fb.group({
-    email: ['wilianmorais@gmail.com', [Validators.required, Validators.email]],
-    password: ['12345', [Validators.required]],
+    email: ['administrador@gmail.com', [Validators.required, Validators.email]],
+    password: ['202558', [Validators.required]],
   });
 
   get email() { return this.form.controls.email; }
@@ -27,8 +29,15 @@ export class LoginComponent {
       this.form.markAllAsTouched();
       return;
     }
-    console.log('Login Bem Sucedido]', this.form.getRawValue());
 
-    this.routes.navigate(['/home']);
+    const { email, password } = this.form.getRawValue();
+
+    const ok = this.auth.login(String(email), String(password));
+    if (!ok) {
+      alert('Credenciais inválidas ou usuário inativo.');
+      return;
+    }
+
+    this.router.navigate(['/home']);
   }
 }

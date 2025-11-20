@@ -1,0 +1,74 @@
+
+<header class="pf-header">
+  <div class="pf-brand">{{ brand }}</div>
+</header>
+
+<main class="pf-page">>
+  <div class="pf-hotel">{{ hotel }}</div>
+
+  <div class="pf-chips">
+    <button class="chip active" aria-label="passo 1"></button>
+    <button class="chip" aria-label="passo 2"></button>
+    <button class="chip" aria-label="passo 3"></button>
+    <button class="chip" aria-label="passo 4"></button>
+    <button class="chip" aria-label="passo 5"></button>
+  </div>
+
+  <section class="pf-card" *ngFor="let b of blocks">
+
+    <div class="pf-card-title">{{ b.title }}</div>
+
+    <ng-container *ngIf="b.type==='sticker'">
+      <ul class="pf-sticker">
+        <li (click)="selectSticker(b.id,1)" [class.on]="answers[b.id]===1">
+          <span>😫</span><small>PÉSSIMA</small>
+        </li>
+        <li (click)="selectSticker(b.id,2)" [class.on]="answers[b.id]===2">
+          <span>☹️</span><small>RUIM</small>
+        </li>
+        <li (click)="selectSticker(b.id,3)" [class.on]="answers[b.id]===3">
+          <span>😐</span><small>REGULAR</small>
+        </li>
+        <li (click)="selectSticker(b.id,4)" [class.on]="answers[b.id]===4">
+          <span>🙂</span><small>BOA</small>
+        </li>
+        <li (click)="selectSticker(b.id,5)" [class.on]="answers[b.id]===5">
+          <span>😄</span><small>EXCELENTE</small>
+        </li>
+      </ul>
+    </ng-container>
+
+    <ng-container *ngIf="b.type==='bar'">
+      <div class="pf-slider-wrap">
+        <input class="pf-slider" type="range" min="1" max="5" step="1"
+               [value]="answers[b.id] || 3" (input)="onSlider(b.id,$event)"/>
+        <div class="pf-slider-scale">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="b.type==='stars'">
+      <div class="pf-stars">
+        <button type="button"
+                *ngFor="let s of [1,2,3,4,5]"
+                class="star"
+                [class.on]="(answers[b.id]||0) >= s"
+                (click)="selectStars(b.id, s)"
+                aria-label="estrela {{s}}">
+          ★
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="b.type==='text'">
+      <textarea class="pf-text" rows="4"
+                placeholder="Escreva sua resposta..."
+                (input)="onText(b.id, $any($event.target).value)">{{answers[b.id]||''}}</textarea>
+    </ng-container>
+  </section>
+
+  <div class="pf-actions">
+    <button class="pf-btn" (click)="confirm()">CONFIRMAR</button>
+  </div>
+</main>

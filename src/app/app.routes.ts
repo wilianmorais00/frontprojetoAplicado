@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-
+import { AdminOnlyGuard } from './Service/admin-service'; 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -38,9 +38,26 @@ export const routes: Routes = [
   {
     path: 'forms/answers/:id',
     loadComponent: () =>
+      import('./Component/component-visualizacao/component-visualizacao').then(
+        (m) => m.ComponentVisualizacao
+      ),
+  },
+
+  {
+    path: 'public/form',
+    loadComponent: () =>
       import(
-        './Component/component-visualizacao/component-visualizacao'
-      ).then((m) => m.ComponentVisualizacao),
+        './Component/publicform-component/publicform-component'
+      ).then((m) => m.PublicFormComponent),
+  },
+
+  {
+    path: 'users',
+    canActivate: [AdminOnlyGuard], 
+    loadComponent: () =>
+      import('./Component/component-users/component-users').then(
+        (m) => m.UsersComponent
+      ),
   },
 
   { path: '**', redirectTo: 'login' },

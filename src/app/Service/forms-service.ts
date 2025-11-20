@@ -8,6 +8,7 @@ export interface FormQuestion {
   prompt: string;
   type: QuestionType;
   order: number;
+  required?: boolean;
 }
 
 export interface FormTemplate {
@@ -26,6 +27,14 @@ export class FormsService {
   private _templates$ = new BehaviorSubject<FormTemplate[]>(this.load());
   templates$ = this._templates$.asObservable();
 
+  list(): FormTemplate[] {
+    return this._templates$.value;
+  }
+
+  getById(id: string): FormTemplate | null {
+    return this._templates$.value.find(t => t.id === id) ?? null;
+  }
+
   addTemplate(input: { title: string; questions: FormQuestion[] }): FormTemplate {
     const t: FormTemplate = {
       id: this.uuid(),
@@ -41,14 +50,25 @@ export class FormsService {
     return t;
   }
 
-  deleteTemplate(id: string): void {
-    const next = this._templates$.value.filter(t => t.id !== id);
+  update(id: string, patch: Partial<FormTemplate>) {
+    const next = this._templates$.value.map(t => (t.id === id ? { ...t, ...patch } : t));
     this._templates$.next(next);
     this.persist(next);
   }
 
-  list(): FormTemplate[] {
-    return this._templates$.value;
+  upsert(tmpl: FormTemplate) {
+    const exists = this._templates$.value.some(t => t.id === tmpl.id);
+    const next = exists
+      ? this._templates$.value.map(t => (t.id === tmpl.id ? { ...t, ...tmpl } : t))
+      : [tmpl, ...this._templates$.value];
+    this._templates$.next(next);
+    this.persist(next);
+  }
+
+  deleteTemplate(id: string): void {
+    const next = this._templates$.value.filter(t => t.id !== id);
+    this._templates$.next(next);
+    this.persist(next);
   }
 
   private load(): FormTemplate[] {
@@ -67,15 +87,10 @@ export class FormsService {
   }
 
   private uuid(): string {
-<<<<<<< HEAD
     try {
       return crypto.randomUUID();
     } catch {
       return Math.random().toString(36).slice(2);
     }
-=======
-    try { return crypto.randomUUID(); }
-    catch { return Math.random().toString(36).slice(2); }
->>>>>>> 32539fe (Sincroniza projeto local com o repositório remoto)
   }
 }
