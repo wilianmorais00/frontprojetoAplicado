@@ -86,9 +86,21 @@
 }
 .pf-btn:hover{filter:brightness(1.05)}
 
-.pf-review{width:420px;max-width:100%}
-.pf-review-title{text-align:left;margin:12px 0 10px}
-.pf-review-list{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.pf-actions-review{
+  margin-top: 40px; 
+}
+
+.pf-form-desc{
+  margin-top: 4px;
+  margin-bottom: 20px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.pf-review{width: 420px;max-width: 100%;margin: 0 auto;}
+.pf-review-title{text-align:center;margin: 12px 0 24px;}
+.pf-review-list{list-style:none;margin:0;padding:0;display:grid;justify-items: center;gap:14px}
 .pf-review-list li{display:flex;align-items:center;gap:12px}
 .tick{
   width:32px;height:32px;border-radius:999px;background:#e9f4fb;border:2px solid var(--blue);

@@ -1,13 +1,14 @@
 <header class="pf-header">
   <div class="head-center">
-      <h1 class="title">QuestIO</h1>
+    <h1 class="title">QuestIO</h1>
   </div>
 </header>
 
 <main class="pf-page">
-  <div class="pf-hotel">{{ hotel }}</div>
+  <div class="pf-hotel">{{ formTitle }}</div>
+  <div class="pf-form-desc" *ngIf="formDescription">{{ formDescription }}</div>
 
-  <div class="pf-chips" *ngIf="mode!=='done'">
+  <div class="pf-chips" *ngIf="mode==='form'">
     <button
       *ngFor="let b of blocks; let i = index"
       class="chip"
@@ -43,7 +44,9 @@
       <div class="pf-slider-wrap" *ngSwitchCase="'bar'">
         <input class="pf-slider" type="range" min="1" max="5" step="1"
                [value]="answers[b.id] || 3" (input)="onSlider(b.id,$event)"/>
-        <div class="pf-slider-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+        <div class="pf-slider-scale">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+        </div>
       </div>
 
       <div class="pf-stars" *ngSwitchCase="'stars'">
@@ -82,7 +85,7 @@
         <span class="lbl">{{ b.title }}</span>
       </li>
     </ul>
-    <div class="pf-actions">
+    <div class="pf-actions pf-actions-review">
       <button class="pf-btn" (click)="finish()">FINALIZAR</button>
     </div>
   </section>

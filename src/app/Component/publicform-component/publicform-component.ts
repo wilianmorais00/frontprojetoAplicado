@@ -9,6 +9,7 @@ interface Block {
   id: string;
   type: BlockType;
   title: string;
+  required: boolean; 
 }
 
 @Component({
@@ -21,6 +22,8 @@ interface Block {
 export class PublicFormComponent {
   brand = 'QuestIO';
   hotel = new URLSearchParams(location.search).get('hotel') ?? 'HOTEL AB';
+  formTitle = '';
+  formDescription = '';
 
   private formsSvc = inject(FormsService);
 
@@ -40,12 +43,19 @@ export class PublicFormComponent {
     if (id) {
       const tpl = this.formsSvc.getById(id);
       if (tpl) {
+        this.formTitle = tpl.title || this.hotel;
+        this.formDescription = tpl.description || '';
         this.blocks = (tpl.questions || []).map(q => ({
           id: q.id,
           type: (q.type === 'slider' ? 'bar' : q.type) as BlockType,
           title: q.prompt || 'COMO VOCÊ AVALIA SUA ESTADIA',
+          required: !!q.required, 
         }));
       }
+    }
+
+    if (!this.formTitle) {
+      this.formTitle = this.hotel;
     }
 
     if (this.blocks.length === 0) {
@@ -58,6 +68,7 @@ export class PublicFormComponent {
         id: `q${i + 1}`,
         type: (['sticker', 'bar', 'stars', 'text'].includes(t) ? t : 'sticker') as BlockType,
         title: 'COMO VOCÊ AVALIA SUA ESTADIA',
+        required: false, 
       }));
     }
   }
@@ -73,21 +84,19 @@ export class PublicFormComponent {
 
   confirm() {
     const b = this.blocks[this.idx];
-    if (!b) {
-      return;
-    }
+    if (!b) return;
+    if (b.required) {
+      const v = this.answers[b.id];
+      const temResposta =
+        v !== undefined &&
+        v !== null &&
+        !(typeof v === 'string' && v.trim() === '') &&
+        !(typeof v === 'number' && isNaN(v));
 
-    const v = this.answers[b.id];
-
-    const temResposta =
-      v !== undefined &&
-      v !== null &&
-      !(typeof v === 'string' && v.trim() === '') &&
-      !(typeof v === 'number' && isNaN(v));
-
-    this.requiredError = !temResposta;
-    if (this.requiredError) {
-      return;
+      this.requiredError = !temResposta;
+      if (this.requiredError) return;
+    } else {
+      this.requiredError = false;
     }
 
     if (this.idx < this.blocks.length - 1) {
