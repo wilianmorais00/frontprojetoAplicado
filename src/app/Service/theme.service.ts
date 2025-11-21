@@ -1,6 +1,12 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
+/**
+ * Serviço de tema:
+ * - Alterna entre tema claro/escuro
+ * - Salva preferência no localStorage
+ * - Aplica/remover classe 'theme-dark' no <html>
+ */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly LS_KEY = 'questio.theme';

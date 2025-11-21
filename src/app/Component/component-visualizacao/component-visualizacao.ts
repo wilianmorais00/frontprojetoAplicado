@@ -3,16 +3,20 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { FormsService, FormTemplate, FormQuestion } from '../../Service/forms-service';
-import { ResponsesService, FormAnswer } from '../../Service/responses-service';
+import { RespostasFormularioService, FormAnswer } from '../../Service/responses-service';
 
 type QuestionType = 'sticker' | 'stars' | 'slider' | 'text';
 
 interface QuestionStats {
-  counts?: number[];  
-  avg?: number;       
-  texts?: string[];    
+  counts?: number[]; // Contagem por opção (escala 1..5)
+  avg?: number;      // Média (para slider)
+  texts?: string[];  // Últimas respostas textuais
 }
 
+/**
+ * Painel gerencial de respostas de formulário.
+ * Mostra agregados por pergunta (contagem, média, últimos textos).
+ */
 @Component({
   selector: 'app-component-visualizacao',
   standalone: true,
@@ -20,15 +24,18 @@ interface QuestionStats {
   templateUrl: './component-visualizacao.html',
   styleUrls: ['./component-visualizacao.css'],
 })
-export class ComponentVisualizacao implements OnInit, OnDestroy {
+export class PainelRespostasFormularioComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private formsSvc = inject(FormsService);
-  private responsesSvc = inject(ResponsesService);
+
+  // ✅ Serviços tipados corretamente
+  private formsSvc: FormsService = inject(FormsService);
+  private responsesSvc: RespostasFormularioService = inject(RespostasFormularioService);
 
   form?: FormTemplate | null;
   questions: FormQuestion[] = [];
 
+  // Estatísticas agregadas por ID de pergunta
   stats: Record<string, QuestionStats> = {};
 
   private respSub?: Subscription;
@@ -38,8 +45,10 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
     this.form = this.formsSvc.getById(id);
     this.questions = this.form?.questions ?? [];
 
+    // Inicializa stats zeradas para cada pergunta
     for (const q of this.questions) this.stats[q.id] = this.zeroStats(q);
 
+    // Observa fluxo de respostas para esse formulário
     this.respSub = this.responsesSvc
       .watchResponses(id)
       .subscribe((list: FormAnswer[] | undefined) => {
@@ -51,8 +60,11 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
     this.respSub?.unsubscribe();
   }
 
-  goHome(): void { this.router.navigate(['/home']); }
+  goHome(): void {
+    this.router.navigate(['/home']);
+  }
 
+  // Inicializa estrutura de stats conforme o tipo de pergunta
   private zeroStats(q: FormQuestion): QuestionStats {
     if (q.type === 'sticker' || q.type === 'stars') return { counts: [0, 0, 0, 0, 0] };
     if (q.type === 'slider') return { avg: 0 };
@@ -60,12 +72,16 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
     return {};
   }
 
-  private buildStats(questions: FormQuestion[], answers: FormAnswer[]): Record<string, QuestionStats> {
+  // Monta estatísticas a partir da lista de respostas
+  private buildStats(
+    questions: FormQuestion[],
+    answers: FormAnswer[]
+  ): Record<string, QuestionStats> {
     const out: Record<string, QuestionStats> = {};
     for (const q of questions) out[q.id] = this.zeroStats(q);
 
     for (const a of answers) {
-      const q = questions.find(x => x.id === a.questionId);
+      const q = questions.find((x) => x.id === a.questionId);
       if (!q) continue;
 
       if (q.type === 'sticker' || q.type === 'stars') {
@@ -78,9 +94,9 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
         if (!isNaN(val)) {
           const sumKey = '__sum__' as unknown as keyof QuestionStats;
           const cntKey = '__cnt__' as unknown as keyof QuestionStats;
-          // @ts-expect-error chave interna temporária
+          // @ts-expect-error chave interna temporária para soma
           out[q.id][sumKey] = ((out[q.id][sumKey] as number) || 0) + val;
-          // @ts-expect-error chave interna temporária
+          // @ts-expect-error chave interna temporária para contagem
           out[q.id][cntKey] = ((out[q.id][cntKey] as number) || 0) + 1;
         }
       }
@@ -95,6 +111,7 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
       }
     }
 
+    // Calcula médias e limita textos
     for (const q of questions) {
       const s = out[q.id];
       if (q.type === 'slider') {
@@ -116,6 +133,7 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
     return out;
   }
 
+  // Converte o valor da resposta para índice de escala (0..4)
   private toScaleIndex(v: unknown): number {
     if (typeof v === 'number') {
       const n = Math.round(v);
@@ -125,11 +143,17 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
     if (typeof v === 'string') {
       const t = v.toLowerCase().trim();
       const map: Record<string, number> = {
-        'péssima': 0, 'pessima': 0, '1': 0,
-        'ruim': 1,    '2': 1,
-        'regular': 2, '3': 2,
-        'boa': 3,     '4': 3,
-        'excelente': 4, '5': 4,
+        'péssima': 0,
+        'pessima': 0,
+        '1': 0,
+        'ruim': 1,
+        '2': 1,
+        'regular': 2,
+        '3': 2,
+        'boa': 3,
+        '4': 3,
+        'excelente': 4,
+        '5': 4,
       };
       if (map[t] != null) return map[t];
       const n = Math.round(Number(t.replace(',', '.')));
@@ -147,6 +171,7 @@ export class ComponentVisualizacao implements OnInit, OnDestroy {
     return NaN;
   }
 
+  // Labels da escala 1..5
   labelOf(i: number): string {
     return ['PÉSSIMA', 'RUIM', 'REGULAR', 'BOA', 'EXCELENTE'][i] || '';
   }

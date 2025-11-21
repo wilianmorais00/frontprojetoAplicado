@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { AdminOnlyGuard } from './Service/admin-service'; 
+import { GuardaRotasAdmin } from './Service/admin-service';
+
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -7,7 +8,7 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () =>
       import('./Component/logComponent/logComponent').then(
-        (m) => m.LoginComponent
+        (m) => m.TelaLoginComponent
       ),
   },
 
@@ -15,7 +16,7 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () =>
       import('./Component/homeComponent/homeComponent').then(
-        (m) => m.HomeComponent
+        (m) => m.TelaInicialComponent
       ),
   },
 
@@ -23,7 +24,7 @@ export const routes: Routes = [
     path: 'client/new',
     loadComponent: () =>
       import('./Component/client-component/client-component').then(
-        (m) => m.ClientComponent
+        (m) => m.CadastroHospedeComponent
       ),
   },
 
@@ -31,7 +32,7 @@ export const routes: Routes = [
     path: 'forms/new',
     loadComponent: () =>
       import('./Component/formscomponent/formscomponent').then(
-        (m) => m.FormsComponent
+        (m) => m.ConstrutorFormularioComponent
       ),
   },
 
@@ -39,24 +40,24 @@ export const routes: Routes = [
     path: 'forms/answers/:id',
     loadComponent: () =>
       import('./Component/component-visualizacao/component-visualizacao').then(
-        (m) => m.ComponentVisualizacao
+        (m) => m.PainelRespostasFormularioComponent
       ),
   },
 
   {
     path: 'public/form',
     loadComponent: () =>
-      import(
-        './Component/publicform-component/publicform-component'
-      ).then((m) => m.PublicFormComponent),
+      import('./Component/publicform-component/publicform-component').then(
+        (m) => m.FormularioPublicoComponent
+      ),
   },
 
   {
     path: 'users',
-    canActivate: [AdminOnlyGuard], 
+    canActivate: [GuardaRotasAdmin],
     loadComponent: () =>
       import('./Component/component-users/component-users').then(
-        (m) => m.UsersComponent
+        (m) => m.GerenciamentoUsuariosComponent
       ),
   },
 

@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ThemeService } from '../../Service/theme.service';
 
+/**
+ * Painel lateral de configurações:
+ * - Alterna tema claro/escuro
+ * - Faz logout e volta para a tela de login
+ */
 @Component({
   selector: 'app-component-configuration',
   standalone: true,
@@ -11,17 +16,27 @@ import { ThemeService } from '../../Service/theme.service';
   templateUrl: './component-configuration.html',
   styleUrls: ['./component-configuration.css'],
 })
-export class ComponentConfiguration {
+export class PainelConfiguracoesComponent {
   @Output() closed = new EventEmitter<void>();
 
   constructor(private router: Router, private theme: ThemeService) {}
 
-  get isDark(): boolean { return this.theme.isDark; }
+  get isDark(): boolean {
+    return this.theme.isDark;
+  }
 
-  close() { this.closed.emit(); }
+  close() {
+    this.closed.emit();
+  }
+
   onLangChange(_: string) {}
-  toggleTheme() { this.theme.toggle(); }
 
+  // Alterna o tema da aplicação (classe CSS 'theme-dark' no <html>)
+  toggleTheme() {
+    this.theme.toggle();
+  }
+
+  // Logout simples baseado em AuthService + navegação para /login
   logout() {
     this.close();
     this.router.navigate(['/login']);

@@ -7,7 +7,12 @@
     <button class="home-btn" type="button" routerLink="/home" aria-label="Voltar para Home">🏠</button>
   </header>
 
-  <div *ngIf="flashMsg" class="flash" [class.flash-success]="flashKind==='success'" [class.flash-info]="flashKind==='info'" [class.flash-danger]="flashKind==='danger'">
+  <div
+    *ngIf="flashMsg"
+    class="flash"
+    [class.flash-success]="flashKind==='success'"
+    [class.flash-info]="flashKind==='info'"
+    [class.flash-danger]="flashKind==='danger'">
     {{ flashMsg }}
   </div>
 
@@ -15,12 +20,12 @@
     <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
       <label class="field">
         <span class="field-label">NOME COMPLETO:</span>
-        <input class="field-input" type="text" formControlName="name" placeholder="Nome completo" />
+        <input class="field-input" type="text" formControlName="nome" placeholder="Nome completo" />
       </label>
 
       <label class="field">
         <span class="field-label">FUNÇÃO:</span>
-        <select class="field-input" formControlName="role">
+        <select class="field-input" formControlName="perfil">
           <option value="colaborador">Colaborador</option>
           <option value="gestor">Gestor</option>
           <option value="admin">Administrador</option>
@@ -34,12 +39,12 @@
 
       <label class="field">
         <span class="field-label">SENHA:</span>
-        <input class="field-input" type="password" formControlName="password" placeholder="••••••" />
+        <input class="field-input" type="password" formControlName="senha" placeholder="••••••" />
       </label>
 
       <div class="field-checkbox">
         <label class="check">
-          <input type="checkbox" formControlName="active" />
+          <input type="checkbox" formControlName="ativo" />
           <span>Ativo</span>
         </label>
       </div>
@@ -60,24 +65,26 @@
           <span class="avatar">👤</span>
           <div class="u-info">
             <div class="u-name">
-              {{ u.name }}
-              <small class="role">• {{ u.role }}</small>
+              {{ u.nome }}
+              <small class="role">• {{ u.perfil }}</small>
             </div>
             <div class="u-meta">{{ u.email }}</div>
           </div>
         </div>
 
         <div class="u-actions">
-          <span class="status" [class.inactive]="!u.active">{{ u.active ? 'Ativo' : 'Inativo' }}</span>
+          <span class="status" [class.inactive]="!u.ativo">
+            {{ u.ativo ? 'Ativo' : 'Inativo' }}
+          </span>
           <button class="icon-only" title="Editar" (click)="edit(u)">✎</button>
           <button class="icon-only" title="Remover" (click)="askRemove(u)">🗑️</button>
         </div>
 
-        <div class="row-confirm" *ngIf="pendingDeleteId() === u.id">
-          <span class="confirm-text">Remover o usuário "<b>{{ u.name }}</b>"?</span>
+        <div class="confirm" *ngIf="pendingDeleteId() === u.id">
+          <span class="confirm-text">Remover o usuário "<b>{{ u.nome }}</b>"?</span>
           <div class="confirm-actions">
-            <button class="btn ghost small" type="button" (click)="cancelRemove()">Cancelar</button>
-            <button class="btn danger small" type="button" (click)="confirmRemove(u)">Excluir</button>
+            <button class="btn ghost sm" type="button" (click)="cancelRemove()">Cancelar</button>
+            <button class="btn danger sm" type="button" (click)="confirmRemove(u)">Excluir</button>
           </div>
         </div>
       </li>

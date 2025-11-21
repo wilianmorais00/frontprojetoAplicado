@@ -5,24 +5,30 @@
 </header>
 
 <main class="pf-page">
+  <!-- Nome do hotel / título principal do formulário -->
   <div class="pf-hotel">{{ formTitle }}</div>
+
+  <!-- Descrição vinda do construtor de formulários (opcional) -->
   <div class="pf-form-desc" *ngIf="formDescription">{{ formDescription }}</div>
 
+  <!-- Indicadores de progresso (um “chip” por pergunta) -->
   <div class="pf-chips" *ngIf="mode==='form'">
     <button
       *ngFor="let b of blocks; let i = index"
       class="chip"
       [class.done]="i < idx"
       [class.current]="i === idx"
-      aria-label="passo {{ i + 1 }}">
+      aria-label="Passo {{ i + 1 }}">
     </button>
   </div>
 
+  <!-- Cartão da pergunta atual -->
   <section class="pf-card" *ngIf="mode==='form' && current as b">
     <div class="pf-card-title">{{ b.title }}</div>
 
     <ng-container [ngSwitch]="b.type">
 
+      <!-- Escala de carinhas (sticker) -->
       <ul class="pf-sticker" *ngSwitchCase="'sticker'">
         <li (click)="selectSticker(b.id,1)" [class.on]="answers[b.id]===1">
           <span>😫</span><small>PÉSSIMA</small>
@@ -41,6 +47,7 @@
         </li>
       </ul>
 
+      <!-- Barra numérica (tipo interno 'bar', mapeado a partir de 'slider') -->
       <div class="pf-slider-wrap" *ngSwitchCase="'bar'">
         <input class="pf-slider" type="range" min="1" max="5" step="1"
                [value]="answers[b.id] || 3" (input)="onSlider(b.id,$event)"/>
@@ -49,6 +56,7 @@
         </div>
       </div>
 
+      <!-- Escala de estrelas -->
       <div class="pf-stars" *ngSwitchCase="'stars'">
         <button type="button"
                 *ngFor="let s of [1,2,3,4,5]"
@@ -60,6 +68,7 @@
         </button>
       </div>
 
+      <!-- Resposta descritiva -->
       <div *ngSwitchCase="'text'">
         <textarea class="pf-text" rows="4"
                   placeholder="Escreva sua resposta..."
@@ -69,14 +78,17 @@
     </ng-container>
   </section>
 
+  <!-- Botão de confirmação da pergunta atual -->
   <div class="pf-actions" *ngIf="mode==='form'">
     <button class="pf-btn" (click)="confirm()">CONFIRMAR</button>
   </div>
 
+  <!-- Mensagem de obrigatoriedade -->
   <div class="pf-error" *ngIf="mode==='form' && requiredError">
     Por favor, responda esta pergunta antes de avançar.
   </div>
 
+  <!-- Tela de revisão (lista de perguntas concluídas) -->
   <section class="pf-review" *ngIf="mode==='review'">
     <div class="pf-hotel pf-review-title">{{ hotel }}</div>
     <ul class="pf-review-list">
@@ -90,6 +102,7 @@
     </div>
   </section>
 
+  <!-- Tela final de agradecimento -->
   <section class="pf-done" *ngIf="mode==='done'">
     <div class="pf-brand big">{{ brand }}</div>
     <div class="pf-thanks">

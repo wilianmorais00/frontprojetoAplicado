@@ -4,7 +4,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ComponentConfiguration } from '../component-configuration/component-configuration';
+
+import { PainelConfiguracoesComponent } from '../component-configuration/component-configuration';
 import { FormsService, FormTemplate } from '../../Service/forms-service';
 import { ClientsService, Client } from '../../Service/client-service';
 import { AuthService } from '../../Service/auth-service';
@@ -14,15 +15,21 @@ type OpenFormCard = FormTemplate;
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, ComponentConfiguration],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, PainelConfiguracoesComponent],
   templateUrl: './homeComponent.html',
   styleUrls: ['./homeComponent.css'],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class TelaInicialComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private formsSvc = inject(FormsService);
-  private clientsSvc = inject(ClientsService);
+
+  // Serviço de formulários (tipado corretamente)
+  private formsSvc: FormsService = inject(FormsService);
+
+  // Serviço de hóspedes
+  private clientsSvc: ClientsService = inject(ClientsService);
+
+  // Serviço de autenticação
   private auth = inject(AuthService);
 
   username = 'USUÁRIO';
@@ -31,10 +38,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   private sub?: Subscription;
   private subAuth?: Subscription;
 
+  // Controle da busca de hóspedes
   searchCtrl = this.fb.control<string>('', { nonNullable: true });
   showAllClients = false;
   selected?: Client | null = null;
 
+  // Form de edição rápida do hóspede (lado direito)
   editForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     room: ['', [Validators.required]],
@@ -42,15 +51,19 @@ export class HomeComponent implements OnInit, OnDestroy {
     phone: ['', [Validators.required]],
   });
 
+  // Configurações (modal)
   settingsOpen = false;
 
+  // Modal de atribuição de formulário para hóspede
   assignOpen = false;
   assignFor?: Client | null = null;
   assignSelectedTemplateId: string | null = null;
 
+  // Banner de feedback na Home
   flashMsg: string | null = null;
   flashKind: 'success' | 'info' | 'danger' = 'success';
   private flashTimer: any;
+
   private showFlash(msg: string, kind: 'success' | 'info' | 'danger' = 'success') {
     this.flashMsg = msg;
     this.flashKind = kind;
@@ -59,9 +72,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Carrega formulários em aberto
     this.openFormCards = this.formsSvc.list();
     this.sub = this.formsSvc.templates$.subscribe(list => (this.openFormCards = list));
 
+    // Observa o usuário logado para mostrar o nome na Home
     this.username = this.auth.current?.name ?? 'USUÁRIO';
     this.subAuth = this.auth.current$.subscribe(u => {
       this.username = u?.name ?? 'USUÁRIO';
@@ -73,15 +88,23 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.subAuth?.unsubscribe();
   }
 
+  // ===== Getters de apoio =====
   get hasOpenForms() { return this.openFormCards.length > 0; }
   get templates(): FormTemplate[] { return this.formsSvc.list(); }
   get hasQuery() { return this.searchCtrl.value.trim().length >= 2; }
-  get clients(): Client[] { return this.clientsSvc.list(); }
+
+  // Lista tipada de hóspedes
+  get clients(): Client[] {
+    return this.clientsSvc.list();
+  }
+
+  // Templates disponíveis para atribuição (exceto o já atribuído)
   get availableTemplates(): FormTemplate[] {
     const currentId = this.assignFor?.assignedFormId ?? null;
     return this.formsSvc.list().filter(t => t.id !== currentId);
   }
 
+  // Filtro de hóspedes pela busca
   get filteredClients(): Client[] {
     if (this.showAllClients) return this.clients;
     const q = this.searchCtrl.value.trim().toLowerCase();
@@ -91,6 +114,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
   }
 
+  // ===== Ações de busca/edição de hóspede =====
   listAllClients(): void { this.showAllClients = true; }
   clearSearch(): void { this.showAllClients = false; this.searchCtrl.setValue(''); }
 
@@ -135,6 +159,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.cancelEdit();
   }
 
+  // ===== Atribuição de formulário =====
   assignToClient(c: Client, ev?: MouseEvent) { ev?.stopPropagation(); this.openAssign(c); }
   openAssign(c: Client) { this.assignFor = c; this.assignSelectedTemplateId = null; this.assignOpen = true; }
   closeAssign() { this.assignOpen = false; this.assignFor = null; this.assignSelectedTemplateId = null; }
@@ -157,6 +182,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.closeAssign();
   }
 
+  // ===== Navegação e ações gerais =====
   goHome() {}
   openSettings() { this.settingsOpen = true; }
   closeSettings() { this.settingsOpen = false; }

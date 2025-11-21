@@ -5,56 +5,98 @@
       <h1 class="title">NOVO HÓSPEDE</h1>
     </div>
 
-  <nav class="actions">
-    <button class="icon-btn" (click)="cancel()" aria-label="Ir para a Home" title="Ir para a Home">🏠</button>
-  </nav>
+    <nav class="actions">
+      <button
+        class="icon-btn"
+        (click)="cancelar()"
+        aria-label="Ir para a Home"
+        title="Ir para a Home"
+      >
+        🏠
+      </button>
+    </nav>
   </header>
 
-  <div *ngIf="banner" class="banner" [ngClass]="bannerType">{{ banner }}</div>
+  <!-- Banner de feedback (sucesso/erro) -->
+  <div *ngIf="banner" class="banner" [ngClass]="bannerType">
+    {{ banner }}
+  </div>
 
   <section class="card">
-    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
       <div class="grid">
         <label class="field">
           <span class="label">NOME COMPLETO:</span>
-          <input class="input" type="text" formControlName="fullName" placeholder="Nome e sobrenome" />
-          <span class="err" *ngIf="f.fullName.touched && f.fullName.invalid">Informe o nome completo.</span>
+          <input
+            class="input"
+            type="text"
+            formControlName="nomeCompleto"
+            placeholder="Nome e sobrenome"
+          />
+          <span class="err" *ngIf="f.nomeCompleto.touched && f.nomeCompleto.invalid">
+            Informe o nome completo.
+          </span>
         </label>
 
         <label class="field">
           <span class="label">QUARTO:</span>
-          <input class="input" type="text" formControlName="room" placeholder="Ex.: 203" />
-          <span class="err" *ngIf="f.room.touched && f.room.invalid">Informe o quarto.</span>
+          <input
+            class="input"
+            type="text"
+            formControlName="quarto"
+            placeholder="Ex.: 203"
+          />
+          <span class="err" *ngIf="f.quarto.touched && f.quarto.invalid">
+            Informe o quarto.
+          </span>
         </label>
 
         <label class="field">
           <span class="label">E-MAIL:</span>
-          <input class="input" type="email" formControlName="email" placeholder="email@exemplo.com" />
-          <span class="err" *ngIf="f.email.touched && f.email.invalid">E-mail inválido.</span>
+          <input
+            class="input"
+            type="email"
+            formControlName="email"
+            placeholder="email@exemplo.com"
+          />
+          <span class="err" *ngIf="f.email.touched && f.email.invalid">
+            E-mail inválido.
+          </span>
         </label>
 
         <label class="field">
           <span class="label">CELULAR:</span>
-          <input class="input" type="text" formControlName="phone" placeholder="(11) 90000-0000" />
-          <span class="err" *ngIf="f.phone.touched && f.phone.invalid">Informe o celular.</span>
+          <input
+            class="input"
+            type="text"
+            formControlName="telefone"
+            placeholder="(11) 90000-0000"
+          />
+          <span class="err" *ngIf="f.telefone.touched && f.telefone.invalid">
+            Informe o celular.
+          </span>
         </label>
 
         <label class="field">
           <span class="label">CHECK-IN:</span>
-          <input class="input" type="date" formControlName="checkin" />
-          <span class="err" *ngIf="f.checkin.touched && f.checkin.invalid">Obrigatório.</span>
+          <input class="input" type="date" formControlName="dataCheckin" />
+          <span class="err" *ngIf="f.dataCheckin.touched && f.dataCheckin.invalid">
+            Obrigatório.
+          </span>
         </label>
 
         <label class="field">
           <span class="label">CHECK-OUT PREVISTO EM:</span>
-          <input class="input" type="date" formControlName="checkout" />
-          <span class="err" *ngIf="f.checkout.touched && f.checkout.invalid">Obrigatório.</span>
+          <input class="input" type="date" formControlName="dataCheckout" />
+          <span class="err" *ngIf="f.dataCheckout.touched && f.dataCheckout.invalid">
+            Obrigatório.
+          </span>
         </label>
       </div>
-      
+
       <div class="actions-row">
         <button class="btn primary" type="submit">Salvar</button>
-        <button class="btn ghost" type="button" (click)="cancel()">Cancelar</button>
+        <button class="btn ghost" type="button" (click)="cancelar()">Cancelar</button>
       </div>
     </form>
   </section>
